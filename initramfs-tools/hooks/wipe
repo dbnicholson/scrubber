@@ -23,10 +23,12 @@ copy_exec /sbin/fdisk
 copy_exec /sbin/sfdisk
 copy_exec /usr/bin/scrub
 
-# Use the full busybox for poweroff
+# Use the full busybox for shutdown utilities
 rm -f "${DESTDIR}"/bin/busybox
 copy_exec /bin/busybox
+ln -sf /bin/busybox "${DESTDIR}"/sbin/halt
 ln -sf /bin/busybox "${DESTDIR}"/sbin/poweroff
+ln -sf /bin/busybox "${DESTDIR}"/sbin/reboot
 ln -sf /bin/busybox "${DESTDIR}"/usr/bin/time
 
 rm -f "${DESTDIR}"/conf/conf.d/*
