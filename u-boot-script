@@ -1,0 +1,17 @@
+# Use scrub's default nnsa mode. See scrub(1) for other options.
+setenv scrub_method nnsa
+# TFTP path to the vmlinuz and initrd.gz files.
+setenv tftp_dir /wipe
+# Pass the scrub method on the kernel command line. For debugging, add
+# init=/bin/sh.
+setenv bootargs console=ttyAMA0 method=${scrub_method}
+# The TFTP server address. Comment this out if you can pass it in the DHCP
+# lease.
+setenv serverip 10.0.1.30
+# Don't try to load the PXE boot file from the DHCP server, just setup the
+# networking configuration.
+setenv autoload no
+# Configure the network device from DHCP, load the kernel and initramfs from
+# the TFTP server and boot it. This is all one long line so everything can be
+# pasted into the U-Boot console in one go.
+dhcp; tftpboot ${kernel_addr_r} ${tftp_dir}/vmlinuz; tftpboot ${ramdisk_addr_r} ${tftp_dir}/initrd.gz; bootz ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr}
