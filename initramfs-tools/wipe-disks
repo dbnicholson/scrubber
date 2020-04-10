@@ -4,6 +4,16 @@ set -e
 
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
+# Parse kernel command line
+METHOD=nnsa
+for arg in `cat /proc/cmdline`; do
+    case "$arg" in
+        method=*)
+            METHOD=${arg#method=}
+            ;;
+    esac
+done
+
 do_poweroff() {
     echo "Powering down machine"
     poweroff -nf
@@ -12,7 +22,7 @@ trap do_poweroff INT TERM HUP EXIT
 
 DISKS=$(lsblk -nlS | awk '{print $1}')
 for disk in $DISKS; do
-    echo "Wiping disk /dev/$disk"
-    time scrub "/dev/$disk"
+    echo "Wiping disk /dev/$disk using method $METHOD"
+    time scrub -p "$METHOD" "/dev/$disk"
 done
 
