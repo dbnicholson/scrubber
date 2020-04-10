@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -e
+
+PREREQ=""
+
+prereqs () {
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+copy_exec /bin/dd
+copy_exec /bin/lsblk
+copy_exec /sbin/fdisk
+copy_exec /sbin/sfdisk
+copy_exec /usr/bin/scrub
+
+# Use the full busybox for poweroff
+rm -f "${DESTDIR}"/bin/busybox
+copy_exec /bin/busybox
+ln -sf /bin/busybox "${DESTDIR}"/sbin/poweroff
+ln -sf /bin/busybox "${DESTDIR}"/usr/bin/time
+
+rm -f "${DESTDIR}"/conf/conf.d/*
+
+rm -f "${DESTDIR}"/init
+copy_exec "${CONFDIR}"/init /init
+copy_exec "${CONFDIR}"/wipe-disks /sbin
+
+exit 0

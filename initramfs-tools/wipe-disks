@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+do_poweroff() {
+    echo "Powering down machine"
+    poweroff -nf
+}
+trap do_poweroff INT TERM HUP EXIT
+
+DISKS=$(lsblk -nlS | awk '{print $1}')
+for disk in $DISKS; do
+    echo "Wiping disk /dev/$disk"
+    time scrub "/dev/$disk"
+done
+
